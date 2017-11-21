@@ -1,14 +1,17 @@
 package ch.bfh.bti7535.w2017.midori.movieclassifier;
 
+import java.io.IOException;
+
 /**
  * Hello world!
  *
  */
 public class App 
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws IOException
     {
-        System.out.println( "Hello World!" );
+        // https://weka.wikispaces.com/Programmatic+Use
+        InstanceLoader loader = new InstanceLoader();
         
     }
 }
