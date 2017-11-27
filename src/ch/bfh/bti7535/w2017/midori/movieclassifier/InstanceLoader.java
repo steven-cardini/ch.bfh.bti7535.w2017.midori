@@ -50,16 +50,17 @@ public class InstanceLoader {
     while (it.hasNext()) {
       String[] wordInfo = it.next();
       String word = wordInfo[csvColMap.get("Entry")];
+      word = word
+          .replaceAll("[^A-Za-z]", "")
+          .toLowerCase();
+      if (dictionary.containsKey(word))
+        continue;
       System.out.println("Test: word is " + word);
       boolean positive = wordInfo[csvColMap.get("Positiv")].equals("Positiv");
       boolean negative = wordInfo[csvColMap.get("Negativ")].equals("Negativ");
-      boolean hostile = wordInfo[csvColMap.get("Hostile")].equals("Hostile");
       boolean strong = wordInfo[csvColMap.get("Strong")].equals("Strong");
-      boolean power = wordInfo[csvColMap.get("Power")].equals("Power");
       boolean weak = wordInfo[csvColMap.get("Weak")].equals("Weak");
-      boolean active = wordInfo[csvColMap.get("Active")].equals("Active");
-      boolean passive = wordInfo[csvColMap.get("Passive")].equals("Passive");
-      WordConnotation wc = new WordConnotation(word, positive, negative, hostile, strong, power, weak, active, passive);
+      WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak);
       dictionary.put(word, wc);
     }
     
