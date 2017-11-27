@@ -1,4 +1,4 @@
-package ch.bfh.bti7535.w2017.midori.movieclassifier;
+package ch.bfh.bti7535.w2017.midori.movieclassifier.converter;
 
 public class WordConnotation {
   

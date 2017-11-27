@@ -1,4 +1,4 @@
-package ch.bfh.bti7535.w2017.midori.movieclassifier;
+package ch.bfh.bti7535.w2017.midori.movieclassifier.converter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,13 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
-public class InstanceLoader {
+public class ArffGenerator {
 
   public enum Label {
     POSITIVE,
@@ -29,59 +30,41 @@ public class InstanceLoader {
   private final static File positiveInstancesFolder = new File(instancesFolderPrefix + "pos");
 
   private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Active", "Passive");
+  private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]");
 
   private static Map<String, WordConnotation> dictionary = new HashMap<>();
-
-  public InstanceLoader() throws FileNotFoundException {
+  
+  
+  public static void main(String args[]) throws FileNotFoundException {
     loadLexicon();
     File[] files = positiveInstancesFolder.listFiles();
-    loadInstanceFile(files[0], Label.POSITIVE);
+    loadCommentFile(files[0], Label.POSITIVE);
   }
-
-  private void loadInstanceFile(File file, Label label) throws FileNotFoundException {
-
-    System.out.println(file.getAbsolutePath());
-
+  
+  private static InstanceFeatures loadCommentFile(File file, Label label) throws FileNotFoundException {
+    
+    InstanceFeatures features = new InstanceFeatures(label);
     Scanner in = new Scanner(file);
-    in.useDelimiter(".");
-
-    while (in.hasNextLine()) {
-      String instance = in.nextLine();
-      int[] features = {
-          0, // pos
-          0, // neg
-          0, // strong
-          0  // weak
-      };
-      System.out.println("-- " + instance);
-      String[] words = instance.split("[^A-Za-z]");
-      for (String word : words) {
-        word = word
-            .replaceAll("[^A-Za-z]", "")
-            .toLowerCase();
-        if (word.length() < 3)
-          continue;
-        if (!dictionary.containsKey(word))
-          continue;
-        WordConnotation wc = dictionary.get(word);
-        if (wc.isPositive())
-          features[0]++;
-        if (wc.isNegative())
-          features[1]++;
-        if (wc.isStrong())
-          features[2]++;
-        if (wc.isWeak())
-          features[3]++;
-        //System.out.println("---- " + wc.getWord() + " - pos: " + wc.isPositive() + " - neg: " + wc.isNegative() + " - str: " + wc.isStrong() + " - weak: " + wc.isWeak());
-      }
-
-      System.out.println("--- pos: " + features[0] + " - neg: " + features[1] + " - str: " + features[2] + " - weak: " + features[3]);
-
-    }
-
+    in.useDelimiter(wordDelimiterPattern);
+    while(in.hasNext()) {
+      String word = in.next()
+          .toLowerCase();
+      if(word.length() < 3 || !dictionary.containsKey(word))
+        continue;
+      WordConnotation wc = dictionary.get(word);
+      features.addWord(wc);
+      
+      System.out.println(word);
+      System.out.println("-- pos: " + wc.isPositive() + " | neg: " + wc.isNegative() + " | strong: " + wc.isStrong() + " | weak: " + wc.isWeak());
+      System.out.println();
+    } 
+    
+    return features;
+    
   }
+  
 
-  private void loadLexicon() throws FileNotFoundException {
+  private static void loadLexicon() throws FileNotFoundException {
 
     CSVParser parser =
         new CSVParserBuilder()
@@ -102,7 +85,7 @@ public class InstanceLoader {
       String[] wordInfo = it.next();
       String word = wordInfo[csvColMap.get("Entry")];
       word = word
-          .replaceAll("[^A-Za-z]", "")
+          .replaceAll(wordDelimiterPattern.pattern(), "")
           .toLowerCase();
       if (dictionary.containsKey(word))
         continue;
@@ -120,7 +103,7 @@ public class InstanceLoader {
 
   }
 
-  private Map<String, Integer> getColIndices (String[] csvHeader) {
+  private static Map<String, Integer> getColIndices (String[] csvHeader) {
     // Map to map column indices in the csv and the relevant attributes
     Map<String, Integer> csvColMap = new HashMap<>();
 
