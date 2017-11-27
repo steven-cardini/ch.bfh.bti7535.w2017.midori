@@ -13,4 +13,24 @@ public class WordConnotation {
     this.weak = weak;
   }
 
+  public String getWord() {
+    return word;
+  }
+
+  public boolean isPositive() {
+    return positive;
+  }
+  
+  public boolean isNegative() {
+    return negative;
+  }
+
+  public boolean isStrong() {
+    return strong;
+  }
+
+  public boolean isWeak() {
+    return weak;
+  }
+
 }
