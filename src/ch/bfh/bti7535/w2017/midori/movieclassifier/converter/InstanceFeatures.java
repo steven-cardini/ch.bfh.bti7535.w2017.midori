@@ -7,6 +7,13 @@ public class InstanceFeatures {
   private Label label = null;
   private int positive, negative, strong, weak = 0;
   
+  public static String[] titles() {
+    String[] str = {
+        "positive", "negative", "strong", "weak", "class"
+    };
+    return str;
+  }
+  
   public InstanceFeatures(Label label) {
     this.label = label;
   }
@@ -25,6 +32,13 @@ public class InstanceFeatures {
 
   public int getWeak() {
     return weak;
+  }
+  
+  public String[] toStringArray() {
+    String[] str = {
+        String.valueOf(positive), String.valueOf(negative), String.valueOf(strong), String.valueOf(weak), label.name()
+    };    
+    return str;
   }
   
   public void addWord(WordConnotation wc) {

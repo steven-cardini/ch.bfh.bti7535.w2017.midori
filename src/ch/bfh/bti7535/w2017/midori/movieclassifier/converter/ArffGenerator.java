@@ -1,8 +1,11 @@
 package ch.bfh.bti7535.w2017.midori.movieclassifier.converter;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +18,10 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+
+import weka.core.Instances;
+import weka.core.converters.CSVLoader;
 
 public class ArffGenerator {
 
@@ -23,22 +30,54 @@ public class ArffGenerator {
     NEGATIVE
   }
 
-  private final static String lexiconFile = "data" + File.separator + "general_inquirer_lexicon" + File.separator + "inquirerbasic.csv";
+  private final static File lexiconInputFile = new File ("data" + File.separator + "general_inquirer_lexicon" + File.separator + "inquirerbasic.csv");
+  private static Map<String, WordConnotation> connotationLexicon = new HashMap<>();
 
-  private final static String instancesFolderPrefix = "data" + File.separator + "txt_sentoken" + File.separator;
-  private final static File negativeInstancesFolder = new File(instancesFolderPrefix + "neg");
-  private final static File positiveInstancesFolder = new File(instancesFolderPrefix + "pos");
+  private final static String trainingDataFolderPrefix = "data" + File.separator + "txt_sentoken" + File.separator;
+  private final static File negativeInstancesFolder = new File(trainingDataFolderPrefix + "neg");
+  private final static File positiveInstancesFolder = new File(trainingDataFolderPrefix + "pos");
+  
+  private final static File csvOutputFile = new File("data" + File.separator + "movie-reviews.csv");
+  private final static File arffOutputFile = new File("data" + File.separator + "movie-reviews.arff");
 
   private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Active", "Passive");
-  private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]");
-
-  private static Map<String, WordConnotation> dictionary = new HashMap<>();
+  private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]");  
   
   
-  public static void main(String args[]) throws FileNotFoundException {
+  public static void main(String args[]) throws IOException {
+    
     loadLexicon();
+    CSVWriter csvWriter = new CSVWriter(new FileWriter(csvOutputFile));
+    // write attribute titles to CSV file
+    csvWriter.writeNext(InstanceFeatures.titles());
+    
+    // iterate through all positively labeled files and add its features to the CSV file
     File[] files = positiveInstancesFolder.listFiles();
-    loadCommentFile(files[0], Label.POSITIVE);
+    for (File file : files) {
+      InstanceFeatures features = loadCommentFile(file, Label.POSITIVE);
+      csvWriter.writeNext(features.toStringArray());
+    }
+    
+    // iterate through all negatively labeled files and add its features to the CSV file
+    files = negativeInstancesFolder.listFiles();
+    for (File file : files) {
+      InstanceFeatures features = loadCommentFile(file, Label.NEGATIVE);
+      csvWriter.writeNext(features.toStringArray());
+    }
+    
+    csvWriter.close();
+    
+    // convert CSV file to ARFF file
+    CSVLoader csvLoader = new CSVLoader();
+    csvLoader.setSource(csvOutputFile);
+    Instances data = csvLoader.getDataSet();
+    data.setClassIndex(data.numAttributes()-1);
+        
+    BufferedWriter writer = new BufferedWriter(new FileWriter(arffOutputFile));
+    writer.write(data.toString());
+    writer.flush();
+    writer.close();
+    
   }
   
   private static InstanceFeatures loadCommentFile(File file, Label label) throws FileNotFoundException {
@@ -49,15 +88,17 @@ public class ArffGenerator {
     while(in.hasNext()) {
       String word = in.next()
           .toLowerCase();
-      if(word.length() < 3 || !dictionary.containsKey(word))
+      if(word.length() < 3 || !connotationLexicon.containsKey(word))
         continue;
-      WordConnotation wc = dictionary.get(word);
+      WordConnotation wc = connotationLexicon.get(word);
       features.addWord(wc);
       
-      System.out.println(word);
-      System.out.println("-- pos: " + wc.isPositive() + " | neg: " + wc.isNegative() + " | strong: " + wc.isStrong() + " | weak: " + wc.isWeak());
-      System.out.println();
-    } 
+      //System.out.println(word);
+      //System.out.println("-- pos: " + wc.isPositive() + " | neg: " + wc.isNegative() + " | strong: " + wc.isStrong() + " | weak: " + wc.isWeak());
+      //System.out.println();
+    }
+    
+    in.close();
     
     return features;
     
@@ -72,7 +113,7 @@ public class ArffGenerator {
         .build();
 
     CSVReader reader =
-        new CSVReaderBuilder(new FileReader(lexiconFile))
+        new CSVReaderBuilder(new FileReader(lexiconInputFile))
         .withCSVParser(parser)
         .build();
 
@@ -87,7 +128,7 @@ public class ArffGenerator {
       word = word
           .replaceAll(wordDelimiterPattern.pattern(), "")
           .toLowerCase();
-      if (dictionary.containsKey(word))
+      if (connotationLexicon.containsKey(word))
         continue;
       //System.out.println("Test: word is " + word);
       //System.out.println("Positiv: " + wordInfo[csvColMap.get("Positiv")]);
@@ -96,7 +137,7 @@ public class ArffGenerator {
       boolean strong = wordInfo[csvColMap.get("Strong")].equals("Strong");
       boolean weak = wordInfo[csvColMap.get("Weak")].equals("Weak");
       WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak);
-      dictionary.put(word, wc);
+      connotationLexicon.put(word, wc);
       //System.out.println("is positive: " + wc.isPositive());
     }
 
