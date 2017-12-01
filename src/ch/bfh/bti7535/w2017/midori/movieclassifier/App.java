@@ -1,6 +1,9 @@
 package ch.bfh.bti7535.w2017.midori.movieclassifier;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Hello world!
@@ -14,8 +17,8 @@ public class App
         //InstanceLoader loader = new InstanceLoader();
     	
     	ArffImporter imp = new ArffImporter();
-    	
-    	imp.imortArff("C:\\Users\\buche\\Documents\\Git\\ch.bfh.bti7535.w2017.midori\\data\\test.arff");
+    	Files.list(Paths.get(".")).forEach(System.out::println);
+    	imp.imortArff("data\\movie-reviews.arff");
         
     }
 }
