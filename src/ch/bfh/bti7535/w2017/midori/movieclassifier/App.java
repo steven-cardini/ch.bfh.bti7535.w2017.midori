@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Random;
+
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.NaiveBayes;
 
 /**
  * Hello world!
@@ -11,14 +16,14 @@ import java.nio.file.Paths;
  */
 public class App 
 {
-    public static void main( String[] args ) throws IOException
+    public static void main( String[] args ) throws Exception
     {
         // https://weka.wikispaces.com/Programmatic+Use
         //InstanceLoader loader = new InstanceLoader();
     	
     	ArffImporter imp = new ArffImporter();
-    	Files.list(Paths.get(".")).forEach(System.out::println);
-    	imp.imortArff("data\\movie-reviews.arff");
-        
+    	//imp.importArff("data\\movie-reviews.arff");
+    	
+    	Stratifier.Fold(10, "data\\movie-reviews.arff");
     }
 }

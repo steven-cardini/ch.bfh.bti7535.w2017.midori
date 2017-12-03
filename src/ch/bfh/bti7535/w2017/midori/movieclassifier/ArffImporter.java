@@ -17,7 +17,7 @@ public class ArffImporter {
 	 * 
 	 * @param filePath
 	 */
-	public Instances imortArff(String filePath) {
+	public static Instances importArff(String filePath) {
 		
 		Instances data = null;
 		
@@ -36,9 +36,9 @@ public class ArffImporter {
 					data.add(inst);
 				}
 				
-				for (int i = 0; i <= data.numInstances() - 1; i++) {
+				/*for (int i = 0; i <= data.numInstances() - 1; i++) {
 				    System.out.println(data.toString());
-				}
+				}*/
 				
 			} catch (IOException e) {
 				System.out.println("Fehler beim Verarbeiten der Datei!");

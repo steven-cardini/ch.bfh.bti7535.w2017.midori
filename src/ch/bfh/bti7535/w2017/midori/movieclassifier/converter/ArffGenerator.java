@@ -40,7 +40,8 @@ public class ArffGenerator {
   private final static File csvOutputFile = new File("data" + File.separator + "movie-reviews.csv");
   private final static File arffOutputFile = new File("data" + File.separator + "movie-reviews.arff");
 
-  private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Active", "Passive");
+  //private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Active", "Passive", "Pleasur");
+  private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Pleasur");
   private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]");  
   
   
@@ -136,7 +137,11 @@ public class ArffGenerator {
       boolean negative = wordInfo[csvColMap.get("Negativ")].equals("Negativ");
       boolean strong = wordInfo[csvColMap.get("Strong")].equals("Strong");
       boolean weak = wordInfo[csvColMap.get("Weak")].equals("Weak");
-      WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak);
+      //boolean active = wordInfo[csvColMap.get("Active")].equals("Active");
+      //boolean passive = wordInfo[csvColMap.get("Passive")].equals("Passive");
+      boolean pleasur = wordInfo[csvColMap.get("Pleasur")].equals("Pleasur");
+//      WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak, active, passive, pleasur);
+      WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak, pleasur);
       connotationLexicon.put(word, wc);
       //System.out.println("is positive: " + wc.isPositive());
     }

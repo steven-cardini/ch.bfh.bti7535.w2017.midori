@@ -5,11 +5,13 @@ import ch.bfh.bti7535.w2017.midori.movieclassifier.converter.ArffGenerator.Label
 public class InstanceFeatures {
 
   private Label label = null;
-  private int positive, negative, strong, weak = 0;
+  //private int positive, negative, strong, weak, active, passive, pleasur = 0;
+  private int positive, negative, strong, weak,  pleasur = 0;
   
   public static String[] titles() {
     String[] str = {
-        "positive", "negative", "strong", "weak", "class"
+        //"positive", "negative", "strong", "weak", "active", "passive", "pleasur", "class"
+    		"positive", "negative", "strong", "weak", "pleasur", "class"
     };
     return str;
   }
@@ -34,9 +36,22 @@ public class InstanceFeatures {
     return weak;
   }
   
+  /*public int getActive() {
+	  return active;
+  }
+  
+  public int getPassive() {
+	  return passive;
+  }*/
+  
+  public int getPleasur() {
+	  return pleasur;
+  }
+  
   public String[] toStringArray() {
     String[] str = {
-        String.valueOf(positive), String.valueOf(negative), String.valueOf(strong), String.valueOf(weak), label.name()
+        //String.valueOf(positive), String.valueOf(negative), String.valueOf(strong), String.valueOf(weak),String.valueOf(active), String.valueOf(passive), String.valueOf(pleasur), label.name()
+        String.valueOf(positive), String.valueOf(negative), String.valueOf(strong), String.valueOf(weak), String.valueOf(pleasur), label.name()
     };    
     return str;
   }
@@ -50,6 +65,12 @@ public class InstanceFeatures {
       addStrong();
     if(wc.isWeak())
       addWeak();
+    /*if(wc.isActive())
+      addActive();
+    if(wc.isPassive())
+    	addPassive();*/
+    if(wc.isPleasur())
+    	addPleasur();
   }
   
   private void addPositive() {
@@ -68,4 +89,14 @@ public class InstanceFeatures {
     weak++;
   }
   
+ /* private void addActive() {
+	  active++;
+  }
+  
+  private void addPassive() {
+	  passive++;
+  }*/
+  private void addPleasur() {
+	  pleasur++;
+  }
 }
