@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -24,11 +26,15 @@ import weka.core.Instances;
 import weka.core.converters.CSVLoader;
 
 public class ArffGenerator {
-
+  
   public enum Label {
     POSITIVE,
     NEGATIVE
   }
+  
+  private final static List<String> negativeMarkers = 
+      Arrays.asList("don't", "didn't", "did not", "does not", "do not");
+  private final static String negativePrefix = "NOT_";
 
   private final static File lexiconInputFile = new File ("data" + File.separator + "general_inquirer_lexicon" + File.separator + "inquirerbasic.csv");
   private static Map<String, WordConnotation> connotationLexicon = new HashMap<>();
@@ -54,16 +60,25 @@ public class ArffGenerator {
     
     // iterate through all positively labeled files and add its features to the CSV file
     File[] files = positiveInstancesFolder.listFiles();
-    for (File file : files) {
-      InstanceFeatures features = loadCommentFile(file, Label.POSITIVE);
-      csvWriter.writeNext(features.toStringArray());
+    
+    File file = files[0];
+    System.out.println(file.getName());
+    String comm = loadCommentFile(file);
+    comm = addNegativeLabels(comm);
+    
+    for (File file2 : files) {
+      //String comment = loadCommentFile(file);
+      //comment = addNegativeLabels(comment);
+      
+      //InstanceFeatures features = loadCommentFile(file, Label.POSITIVE);
+      //csvWriter.writeNext(features.toStringArray());
     }
     
     // iterate through all negatively labeled files and add its features to the CSV file
     files = negativeInstancesFolder.listFiles();
-    for (File file : files) {
-      InstanceFeatures features = loadCommentFile(file, Label.NEGATIVE);
-      csvWriter.writeNext(features.toStringArray());
+    for (File file3 : files) {
+      //InstanceFeatures features = loadCommentFile(file, Label.NEGATIVE);
+      //csvWriter.writeNext(features.toStringArray());
     }
     
     csvWriter.close();
@@ -81,7 +96,47 @@ public class ArffGenerator {
     
   }
   
-  private static InstanceFeatures loadCommentFile(File file, Label label) throws FileNotFoundException {
+  private static String loadCommentFile(File file) throws FileNotFoundException {
+    
+    Scanner scanner = new Scanner(file);
+    String fileContent = scanner.useDelimiter("\\Z").next();
+    scanner.close();
+    return fileContent;
+    
+  }
+  
+  private static String addNegativeLabels(String comment) {
+    
+    String delimiter = StringUtils.join(negativeMarkers, "|");
+    
+    String[] parts = comment.split(delimiter);
+    if (parts.length < 2)
+      return comment;
+    for (int i = 1; i<parts.length; i++) {
+      String part = parts[i].toLowerCase();
+      String[] words = part.split(" ");
+      for (int j=0; j<words.length; j++) {
+        if (words[j].matches("[.,!?\\-]"))
+          break;
+        if (!words[j].matches(".*[A-Za-z]+.*"))
+          continue;
+        words[j] = negativePrefix + words[j];
+      }
+      parts[i] = String.join(" ", words);
+      
+      //System.out.println("--- orig: " + part);
+      //System.out.println("--- conv: " + parts[i]);
+      
+    }
+    
+    String convertedText = String.join(" ", parts);
+    System.out.println(convertedText);
+    
+    return convertedText;
+    
+  }
+  
+  private static InstanceFeatures loadCommentFile2(File file, Label label) throws FileNotFoundException {
     
     InstanceFeatures features = new InstanceFeatures(label);
     Scanner in = new Scanner(file);
