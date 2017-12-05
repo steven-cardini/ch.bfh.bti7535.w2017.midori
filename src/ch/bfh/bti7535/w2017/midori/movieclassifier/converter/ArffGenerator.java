@@ -32,8 +32,7 @@ public class ArffGenerator {
     NEGATIVE
   }
   
-  private final static List<String> negativeMarkers = 
-      Arrays.asList("don't", "didn't", "did not", "does not", "do not");
+  private final static List<String> negativeMarkers = Arrays.asList("n't", "not");
   private final static String negativePrefix = "NOT_";
 
   private final static File lexiconInputFile = new File ("data" + File.separator + "general_inquirer_lexicon" + File.separator + "inquirerbasic.csv");
@@ -48,8 +47,10 @@ public class ArffGenerator {
 
   //private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Active", "Passive", "Pleasur");
   private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Pleasur");
-  private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]");  
-  
+  private final static Pattern wordRecognitionPattern = Pattern.compile(".*[A-Za-z]+.*");
+  private final static Pattern punctuationRecognitionPattern = Pattern.compile("[.,!?\\-]");
+  private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]"); 
+    
   
   public static void main(String args[]) throws IOException {
     
@@ -60,25 +61,20 @@ public class ArffGenerator {
     
     // iterate through all positively labeled files and add its features to the CSV file
     File[] files = positiveInstancesFolder.listFiles();
-    
-    File file = files[0];
-    System.out.println(file.getName());
-    String comm = loadCommentFile(file);
-    comm = addNegativeLabels(comm);
-    
-    for (File file2 : files) {
-      //String comment = loadCommentFile(file);
-      //comment = addNegativeLabels(comment);
-      
-      //InstanceFeatures features = loadCommentFile(file, Label.POSITIVE);
-      //csvWriter.writeNext(features.toStringArray());
+    for (File file : files) {      
+      String comment = loadCommentFile(file);
+      comment = addNegativeLabels(comment);
+      InstanceFeatures features = extractFeatures(comment, Label.POSITIVE);
+      csvWriter.writeNext(features.toStringArray());      
     }
     
     // iterate through all negatively labeled files and add its features to the CSV file
     files = negativeInstancesFolder.listFiles();
-    for (File file3 : files) {
-      //InstanceFeatures features = loadCommentFile(file, Label.NEGATIVE);
-      //csvWriter.writeNext(features.toStringArray());
+    for (File file : files) {
+      String comment = loadCommentFile(file);
+      comment = addNegativeLabels(comment);
+      InstanceFeatures features = extractFeatures(comment, Label.NEGATIVE);
+      csvWriter.writeNext(features.toStringArray());
     }
     
     csvWriter.close();
@@ -116,9 +112,9 @@ public class ArffGenerator {
       String part = parts[i].toLowerCase();
       String[] words = part.split(" ");
       for (int j=0; j<words.length; j++) {
-        if (words[j].matches("[.,!?\\-]"))
+        if (words[j].matches(punctuationRecognitionPattern.pattern()))
           break;
-        if (!words[j].matches(".*[A-Za-z]+.*"))
+        if (!words[j].matches(wordRecognitionPattern.pattern()))
           continue;
         words[j] = negativePrefix + words[j];
       }
@@ -130,32 +126,39 @@ public class ArffGenerator {
     }
     
     String convertedText = String.join(" ", parts);
-    System.out.println(convertedText);
+    //System.out.println(convertedText);
     
     return convertedText;
     
   }
   
-  private static InstanceFeatures loadCommentFile2(File file, Label label) throws FileNotFoundException {
+  private static InstanceFeatures extractFeatures(String text, Label label) {
     
     InstanceFeatures features = new InstanceFeatures(label);
-    Scanner in = new Scanner(file);
-    in.useDelimiter(wordDelimiterPattern);
-    while(in.hasNext()) {
-      String word = in.next()
-          .toLowerCase();
-      if(word.length() < 3 || !connotationLexicon.containsKey(word))
+    
+    String[] words = text.split(" ");
+    for (String word : words) {
+      boolean negated = false;
+      if (word.contains(negativePrefix)) {
+        System.out.println(word + " contains negative Prefix");
+        negated = true;
+        word = word.substring(negativePrefix.length());
+        System.out.println("inverted word: " + word);
+      }
+      word = word.toLowerCase();
+        
+      if (word.length() < 3 || !connotationLexicon.containsKey(word))
         continue;
       WordConnotation wc = connotationLexicon.get(word);
-      features.addWord(wc);
+      features.addWord(wc, negated);
+    }
+    
       
       //System.out.println(word);
       //System.out.println("-- pos: " + wc.isPositive() + " | neg: " + wc.isNegative() + " | strong: " + wc.isStrong() + " | weak: " + wc.isWeak());
       //System.out.println();
-    }
     
-    in.close();
-    
+        
     return features;
     
   }
