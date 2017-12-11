@@ -45,8 +45,7 @@ public class ArffGenerator {
   private final static File csvOutputFile = new File("data" + File.separator + "movie-reviews.csv");
   private final static File arffOutputFile = new File("data" + File.separator + "movie-reviews.arff");
 
-  //private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Active", "Passive", "Pleasur");
-  private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak", "Pleasur");
+  private final static List<String> relevantCols = Arrays.asList("Entry", "Positiv", "Negativ", "Hostile", "Strong", "Power", "Weak");
   private final static Pattern wordRecognitionPattern = Pattern.compile(".*[A-Za-z]+.*");
   private final static Pattern punctuationRecognitionPattern = Pattern.compile("[.,!?\\-]");
   private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]"); 
@@ -88,8 +87,7 @@ public class ArffGenerator {
     BufferedWriter writer = new BufferedWriter(new FileWriter(arffOutputFile));
     writer.write(data.toString());
     writer.flush();
-    writer.close();
-    
+    writer.close();   
   }
   
   private static String loadCommentFile(File file) throws FileNotFoundException {
@@ -98,7 +96,6 @@ public class ArffGenerator {
     String fileContent = scanner.useDelimiter("\\Z").next();
     scanner.close();
     return fileContent;
-    
   }
   
   private static String addNegativeLabels(String comment) {
@@ -121,15 +118,13 @@ public class ArffGenerator {
       parts[i] = String.join(" ", words);
       
       //System.out.println("--- orig: " + part);
-      //System.out.println("--- conv: " + parts[i]);
-      
+      //System.out.println("--- conv: " + parts[i]);    
     }
     
     String convertedText = String.join(" ", parts);
     //System.out.println(convertedText);
     
-    return convertedText;
-    
+    return convertedText;   
   }
   
   private static InstanceFeatures extractFeatures(String text, Label label) {
@@ -152,13 +147,11 @@ public class ArffGenerator {
       WordConnotation wc = connotationLexicon.get(word);
       features.addWord(wc, negated);
     }
-    
-      
+         
       //System.out.println(word);
       //System.out.println("-- pos: " + wc.isPositive() + " | neg: " + wc.isNegative() + " | strong: " + wc.isStrong() + " | weak: " + wc.isWeak());
       //System.out.println();
-    
-        
+      
     return features;
     
   }
@@ -195,16 +188,10 @@ public class ArffGenerator {
       boolean negative = wordInfo[csvColMap.get("Negativ")].equals("Negativ");
       boolean strong = wordInfo[csvColMap.get("Strong")].equals("Strong");
       boolean weak = wordInfo[csvColMap.get("Weak")].equals("Weak");
-      //boolean active = wordInfo[csvColMap.get("Active")].equals("Active");
-      //boolean passive = wordInfo[csvColMap.get("Passive")].equals("Passive");
-      boolean pleasur = wordInfo[csvColMap.get("Pleasur")].equals("Pleasur");
-//      WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak, active, passive, pleasur);
-      WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak, pleasur);
+      WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak);
       connotationLexicon.put(word, wc);
       //System.out.println("is positive: " + wc.isPositive());
     }
-
-
   }
 
   private static Map<String, Integer> getColIndices (String[] csvHeader) {
