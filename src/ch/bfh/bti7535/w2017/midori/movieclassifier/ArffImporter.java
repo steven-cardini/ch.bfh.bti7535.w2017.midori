@@ -22,7 +22,6 @@ public class ArffImporter {
 		Instances data = null;
 		
 		try {
-			System.out.println(filePath);
 			BufferedReader reader = new BufferedReader(new FileReader(filePath));
 			
 			try {

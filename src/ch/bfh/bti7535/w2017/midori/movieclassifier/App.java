@@ -1,5 +1,6 @@
 package ch.bfh.bti7535.w2017.midori.movieclassifier;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,6 +25,6 @@ public class App
     	ArffImporter imp = new ArffImporter();
     	//imp.importArff("data\\movie-reviews.arff");
     	
-    	Stratifier.Fold(10, "data\\movie-reviews.arff");
+    	Stratifier.Fold(10, "data" + File.separator +"movie-reviews.arff");
     }
 }
