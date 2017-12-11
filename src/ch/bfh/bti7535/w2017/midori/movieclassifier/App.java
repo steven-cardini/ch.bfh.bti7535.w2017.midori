@@ -8,10 +8,6 @@ import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instances;
 
-/**
- * Hello world!
- *
- */
 
 public class App {
 
