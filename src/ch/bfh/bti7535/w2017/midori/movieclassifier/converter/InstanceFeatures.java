@@ -19,10 +19,10 @@ public class InstanceFeatures {
   }
 
   private Label label = null;
-  private double positive, negative = 0;
+  private double positive, negative, pleasur, arousal, pain, virtue, hostile = 0;
 
   public static String[] titles() {
-    String[] str = { "positive", "negative", "class" };
+    String[] str = { "positive", "negative", "pleasur", "arousal", "pain", "virtue", "hostile", "class" };
     return str;
   }
 
@@ -39,7 +39,8 @@ public class InstanceFeatures {
   }
 
   public String[] toStringArray() {
-    String[] str = { String.valueOf(positive), String.valueOf(negative), label.name() };
+    String[] str = { String.valueOf(positive), String.valueOf(negative), String.valueOf(pleasur), String.valueOf(arousal), String.valueOf(pain),
+        String.valueOf(virtue), String.valueOf(hostile), label.name() };
     return str;
   }
 
@@ -62,6 +63,16 @@ public class InstanceFeatures {
       else
         addNegative(weight);
     }
+    if (wc.isArousal())
+      addArousal();
+    if (wc.isHostile())
+      addHostile();
+    if (wc.isPain())
+      addPain();
+    if (wc.isPleasur())
+      addPleasur();
+    if (wc.isVirtue())
+      addVirtue();
   }
 
   private void addPositive(Weight weight) {
@@ -70,5 +81,25 @@ public class InstanceFeatures {
 
   private void addNegative(Weight weight) {
     negative = negative + weight.getValue();
+  }
+
+  private void addArousal() {
+    arousal++;
+  }
+
+  private void addHostile() {
+    hostile++;
+  }
+
+  private void addPain() {
+    pain++;
+  }
+
+  private void addPleasur() {
+    pleasur++;
+  }
+
+  private void addVirtue() {
+    virtue++;
   }
 }

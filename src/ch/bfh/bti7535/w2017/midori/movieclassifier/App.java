@@ -8,7 +8,6 @@ import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.core.Instances;
 
-
 public class App {
 
   private final static File arffInputFile = new File("data" + File.separator + "movie-reviews.arff");
@@ -36,7 +35,7 @@ public class App {
 
       cl.buildClassifier(train);
       eval.evaluateModel(cl, test);
-      System.out.println(eval.errorRate());
+      System.out.println(eval.pctCorrect());
     }
 
     // eval.crossValidateModel(cl, in, 10, new Random(1));
