@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,6 +25,7 @@ import com.opencsv.CSVWriter;
 
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
+import weka.core.stemmers.SnowballStemmer; 
 
 public class ArffGenerator {
 
@@ -53,6 +55,8 @@ public class ArffGenerator {
   public static void main(String args[]) throws IOException {
 
     loadLexicon();
+    SnowballStemmer stemmer = new SnowballStemmer(); 
+    
     CSVWriter csvWriter = new CSVWriter(new FileWriter(csvOutputFile));
     // write attribute titles to CSV file
     csvWriter.writeNext(InstanceFeatures.titles());
@@ -61,6 +65,7 @@ public class ArffGenerator {
     File[] files = positiveInstancesFolder.listFiles();
     for (File file : files) {
       String comment = loadCommentFile(file);
+      comment = stem(stemmer, comment);
       comment = addNegativeLabels(comment);
       InstanceFeatures features = extractFeatures(comment, Label.POSITIVE);
       csvWriter.writeNext(features.toStringArray());
@@ -70,6 +75,7 @@ public class ArffGenerator {
     files = negativeInstancesFolder.listFiles();
     for (File file : files) {
       String comment = loadCommentFile(file);
+      comment = stem(stemmer, comment);
       comment = addNegativeLabels(comment);
       InstanceFeatures features = extractFeatures(comment, Label.NEGATIVE);
       csvWriter.writeNext(features.toStringArray());
@@ -96,12 +102,22 @@ public class ArffGenerator {
     scanner.close();
     return fileContent;
   }
+  
+  private static String stem(SnowballStemmer stemmer, String comment) {
+	 return Arrays.asList(
+		 comment.split(" ")
+	 ).stream()
+ 	.map(word -> stemmer.stem(word))
+ 	.collect(Collectors.joining(" "));
+  }
+  
 
   private static String addNegativeLabels(String comment) {
 
     String delimiter = StringUtils.join(negativeMarkers, "|");
 
     String[] parts = comment.split(delimiter);
+    
     if (parts.length < 2)
       return comment;
     for (int i = 1; i < parts.length; i++) {
@@ -125,7 +141,8 @@ public class ArffGenerator {
 
     return convertedText;
   }
-
+  
+  
   private static InstanceFeatures extractFeatures(String text, Label label) {
 
     InstanceFeatures features = new InstanceFeatures(label);
