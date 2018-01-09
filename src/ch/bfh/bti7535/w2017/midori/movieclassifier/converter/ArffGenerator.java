@@ -103,7 +103,7 @@ public class ArffGenerator {
     return fileContent;
   }
   
-  private static String stem(SnowballStemmer stemmer, String comment) {
+  private static String stem(Stemmer stemmer, String comment) {
 	 return Arrays.asList(
 		 comment.split(" ")
 	 ).stream()
@@ -171,7 +171,7 @@ public class ArffGenerator {
 
   }
 
-  private static void loadLexicon(SnowballStemmer stemmer) throws FileNotFoundException {
+  private static void loadLexicon(Stemmer stemmer) throws FileNotFoundException {
 
     CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
 
