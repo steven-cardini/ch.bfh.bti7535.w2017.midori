@@ -53,9 +53,9 @@ public class ArffGenerator {
   private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]");
 
   public static void main(String args[]) throws IOException {
-
-    loadLexicon();
+		
     SnowballStemmer stemmer = new SnowballStemmer(); 
+    loadLexicon(stemmer);
     
     CSVWriter csvWriter = new CSVWriter(new FileWriter(csvOutputFile));
     // write attribute titles to CSV file
@@ -171,7 +171,7 @@ public class ArffGenerator {
 
   }
 
-  private static void loadLexicon() throws FileNotFoundException {
+  private static void loadLexicon(SnowballStemmer stemmer) throws FileNotFoundException {
 
     CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
 
@@ -185,7 +185,9 @@ public class ArffGenerator {
     while (it.hasNext()) {
       String[] wordInfo = it.next();
       String word = wordInfo[csvColMap.get("Entry")];
+
       word = word.replaceAll(wordDelimiterPattern.pattern(), "").toLowerCase();
+      
       if (connotationLexicon.containsKey(word))
         continue;
       // System.out.println("Test: word is " + word);
@@ -199,6 +201,9 @@ public class ArffGenerator {
       boolean pain = wordInfo[csvColMap.get("Pain")].equals("Pain");
       boolean virtue = wordInfo[csvColMap.get("Virtue")].equals("Virtue");
       boolean hostile = wordInfo[csvColMap.get("Hostile")].equals("Hostile");
+      
+ 	  word = stemmer.stem(word);
+
 
       WordConnotation wc = new WordConnotation(word, positive, negative, strong, weak, pleasur, arousal, pain, virtue, hostile);
       connotationLexicon.put(word, wc);

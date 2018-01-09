@@ -9,6 +9,7 @@ import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
+import weka.core.stemmers.LovinsStemmer;
 import weka.core.stemmers.SnowballStemmer;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
@@ -35,12 +36,13 @@ public class App {
 	private static void naiveBayes() throws Exception {
 		Random rand = new Random();
 
-		Classifier cl = new NaiveBayes();
+		NaiveBayes cl = new NaiveBayes();
 		Instances inst = ArffImporter.importArff(arffInputFile);
 
 		inst.randomize(rand);
 		inst.stratify(10);
-
+	
+	
 		Evaluation eval = new Evaluation(inst);
 
 		for (int n = 0; n < 10; n++) {
@@ -62,12 +64,11 @@ public class App {
 		inst.setClassIndex(inst.numAttributes() - 1);
 
 		J48 tree = new J48();
-		Classifier naiveBayes = new NaiveBayes();
+		LovinsStemmer stemmer = new LovinsStemmer();
 
 		StringToWordVector filter = new StringToWordVector();
 		filter.setInputFormat(inst);
 		filter.setIDFTransform(true);
-		SnowballStemmer stemmer = new SnowballStemmer();
 		filter.setStemmer(stemmer);
 		filter.setLowerCaseTokens(true);
 
