@@ -25,7 +25,8 @@ import com.opencsv.CSVWriter;
 
 import weka.core.Instances;
 import weka.core.converters.CSVLoader;
-import weka.core.stemmers.SnowballStemmer; 
+import weka.core.stemmers.SnowballStemmer;
+import weka.core.stemmers.Stemmer; 
 
 public class ArffGenerator {
 
@@ -172,7 +173,7 @@ public class ArffGenerator {
   }
 
   private static void loadLexicon(Stemmer stemmer) throws FileNotFoundException {
-
+ 
     CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
 
     CSVReader reader = new CSVReaderBuilder(new FileReader(lexiconInputFile)).withCSVParser(parser).build();
