@@ -4,8 +4,7 @@ import java.io.File;
 import java.util.Random;
 
 import weka.classifiers.Evaluation;
-import weka.classifiers.bayes.NaiveBayes;
-
+import weka.classifiers.bayes.NaiveBayesMultinomial;
 import weka.core.Instances;
 
 
@@ -29,7 +28,7 @@ public class App {
 	private static void naiveBayes() throws Exception {
 		Random rand = new Random();
 
-		NaiveBayes cl = new NaiveBayes();
+		NaiveBayesMultinomial cl = new NaiveBayesMultinomial();
 		Instances inst = ArffImporter.importArff(arffInputFile);
 
 		inst.randomize(rand);
