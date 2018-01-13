@@ -53,6 +53,11 @@ public class ArffGenerator {
   private final static Pattern punctuationRecognitionPattern = Pattern.compile("[.,!?\\-]");
   private final static Pattern wordDelimiterPattern = Pattern.compile("[^A-Za-z]");
 
+  /**
+   * 
+   * @param args
+   * @throws IOException
+   */
   public static void main(String args[]) throws IOException {
 		
     SnowballStemmer stemmer = new SnowballStemmer(); 
@@ -96,6 +101,12 @@ public class ArffGenerator {
     writer.close();
   }
 
+  /**
+   * 
+   * @param file
+   * @return
+   * @throws FileNotFoundException
+   */
   private static String loadCommentFile(File file) throws FileNotFoundException {
 
     Scanner scanner = new Scanner(file);
@@ -104,6 +115,12 @@ public class ArffGenerator {
     return fileContent;
   }
   
+  /**
+   * 
+   * @param stemmer
+   * @param comment
+   * @return
+   */
   private static String stem(Stemmer stemmer, String comment) {
 	 return Arrays.asList(
 		 comment.split(" ")
@@ -113,6 +130,11 @@ public class ArffGenerator {
   }
   
 
+  /**
+   * 
+   * @param comment
+   * @return
+   */
   private static String addNegativeLabels(String comment) {
 
     String delimiter = StringUtils.join(negativeMarkers, "|");
@@ -144,6 +166,12 @@ public class ArffGenerator {
   }
   
   
+  /**
+   * 
+   * @param text
+   * @param label
+   * @return
+   */
   private static InstanceFeatures extractFeatures(String text, Label label) {
 
     InstanceFeatures features = new InstanceFeatures(label);
@@ -172,6 +200,11 @@ public class ArffGenerator {
 
   }
 
+  /**
+   * 
+   * @param stemmer
+   * @throws FileNotFoundException
+   */
   private static void loadLexicon(Stemmer stemmer) throws FileNotFoundException {
  
     CSVParser parser = new CSVParserBuilder().withSeparator(';').build();
@@ -211,7 +244,12 @@ public class ArffGenerator {
       // System.out.println("is positive: " + wc.isPositive());
     }
   }
-
+  
+/**
+ * 
+ * @param csvHeader
+ * @return
+ */
   private static Map<String, Integer> getColIndices(String[] csvHeader) {
     // Map to map column indices in the csv and the relevant attributes
     Map<String, Integer> csvColMap = new HashMap<>();

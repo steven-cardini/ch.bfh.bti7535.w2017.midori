@@ -14,7 +14,7 @@ import weka.core.converters.ArffLoader.ArffReader;
 public class ArffImporter {
 
   /***
-   * 
+   * Klasse zum Einlesen des ARFF-Files
    * @param arffinputfile
    */
   public static Instances importArff(File arffinputfile) {
@@ -34,11 +34,6 @@ public class ArffImporter {
         while ((inst = arff.readInstance(data)) != null) {
           data.add(inst);
         }
-
-        /*
-         * for (int i = 0; i <= data.numInstances() - 1; i++) { System.out.println(data.toString()); }
-         */
-
       } catch (IOException e) {
         System.out.println("Fehler beim Verarbeiten der Datei!");
         e.printStackTrace();
