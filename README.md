@@ -3,5 +3,5 @@ Software project for BFH module Data Science
 
 
 Instructions:
-1. Run ArffGenerator.java first
-1. Run App.java second
+1. Run ArffGenerator.java 
+1. Run App.java 
