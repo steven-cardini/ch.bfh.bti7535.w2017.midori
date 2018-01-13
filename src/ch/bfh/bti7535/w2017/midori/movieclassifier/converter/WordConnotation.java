@@ -5,6 +5,19 @@ public class WordConnotation {
   private String word;
   private boolean positive, negative, strong, weak, pleasur, arousal, pain, virtue, hostile;
 
+  /**
+   * 
+   * @param word
+   * @param positive
+   * @param negative
+   * @param strong
+   * @param weak
+   * @param pleasur
+   * @param arousal
+   * @param pain
+   * @param virtue
+   * @param hostile
+   */
   public WordConnotation(String word, boolean positive, boolean negative, boolean strong, boolean weak, boolean pleasur, boolean arousal, boolean pain, boolean virtue, boolean hostile) {
     this.word = word;
     this.positive = positive;

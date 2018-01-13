@@ -19,7 +19,7 @@ public class App {
 		// ArffImporter imp = new ArffImporter();
 		// imp.importArff("data\\movie-reviews.arff");
 
-		System.out.println("naive bayes");
+		System.out.println("Naive Bayes");
 		naiveBayes();
 
 		// eval.crossValidateModel(cl, in, 10, new Random(1));

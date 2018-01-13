@@ -38,12 +38,21 @@ public class InstanceFeatures {
     return negative;
   }
 
+  /**
+   * 
+   * @return
+   */
   public String[] toStringArray() {
     String[] str = { String.valueOf(positive), String.valueOf(negative), String.valueOf(pleasur), String.valueOf(arousal), String.valueOf(pain),
         String.valueOf(virtue), String.valueOf(hostile), label.name() };
     return str;
   }
 
+  /**
+   * 
+   * @param wc
+   * @param negated
+   */
   public void addWord(WordConnotation wc, boolean negated) {
     Weight weight = Weight.REGULAR;
     if (wc.isStrong())
