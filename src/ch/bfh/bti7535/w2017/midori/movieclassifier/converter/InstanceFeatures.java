@@ -2,8 +2,14 @@ package ch.bfh.bti7535.w2017.midori.movieclassifier.converter;
 
 import ch.bfh.bti7535.w2017.midori.movieclassifier.converter.ArffGenerator.Label;
 
+/**
+ * This class holds all features for one instance (review)
+ */
 public class InstanceFeatures {
 
+  /**
+   * Enumeration that handles word impact / weight on the InstanceFeature object
+   */
   public enum Weight {
     STRONG(5), REGULAR(3), WEAK(1);
 
@@ -18,48 +24,46 @@ public class InstanceFeatures {
     }
   }
 
-  private Label label = null;
+  private Label label;
   private double positive, negative, pleasur, arousal, pain, virtue, hostile = 0;
 
+  /**
+   * @return the names of the features
+   */
   public static String[] titles() {
-    String[] str = { "positive", "negative", "pleasur", "arousal", "pain", "virtue", "hostile", "class" };
-    return str;
+    return new String[]{
+        "positive", "negative", "pleasur", "arousal", "pain", "virtue", "hostile", "class"
+    };
   }
 
   public InstanceFeatures(Label label) {
     this.label = label;
   }
 
-  public double getPositive() {
-    return positive;
-  }
-
-  public double getNegative() {
-    return negative;
-  }
-
   /**
-   * 
-   * @return
+   * @return the feature values as String array
    */
   public String[] toStringArray() {
-    String[] str = { String.valueOf(positive), String.valueOf(negative), String.valueOf(pleasur), String.valueOf(arousal), String.valueOf(pain),
-        String.valueOf(virtue), String.valueOf(hostile), label.name() };
-    return str;
+    return new String[]{
+        String.valueOf(positive), String.valueOf(negative), String.valueOf(pleasur), String.valueOf(arousal), String.valueOf(pain), String.valueOf(virtue), String.valueOf(hostile), label.name()
+    };
   }
 
   /**
-   * 
-   * @param wc
-   * @param negated
+   * Method to add a new word. Connotation features are directly extracted by the method.
+   *
+   * @param wc      the WordConnotation object of the word to be added
+   * @param negated tells if the word is to be handled as a negation
    */
   public void addWord(WordConnotation wc, boolean negated) {
+    // determine the weight of the connotation
     Weight weight = Weight.REGULAR;
     if (wc.isStrong())
       weight = Weight.STRONG;
     else if (wc.isWeak())
       weight = Weight.WEAK;
 
+    // add connotations that apply - consider negations
     if (wc.isPositive()) {
       if (negated)
         addNegative(weight);

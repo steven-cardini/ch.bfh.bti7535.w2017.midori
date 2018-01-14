@@ -10,41 +10,34 @@ import weka.core.Instances;
 
 public class App {
 
-	private final static File arffInputFile = new File("data" + File.separator + "movie-reviews.arff");
+  private final static File arffInputFile = new File("data" + File.separator + "movie-reviews.arff");
+  private final static int numFolds = 10;
 
-	public static void main(String[] args) throws Exception {
-		// https://weka.wikispaces.com/Programmatic+Use
-		// InstanceLoader loader = new InstanceLoader();
+  public static void main(String[] args) throws Exception {
 
-		// ArffImporter imp = new ArffImporter();
-		// imp.importArff("data\\movie-reviews.arff");
+    naiveBayes();
 
-		System.out.println("Naive Bayes");
-		naiveBayes();
+  }
 
-		// eval.crossValidateModel(cl, in, 10, new Random(1));
-	}
+  private static void naiveBayes() throws Exception {
+    Random rand = new Random();
 
-	private static void naiveBayes() throws Exception {
-		Random rand = new Random();
+    NaiveBayesMultinomial cl = new NaiveBayesMultinomial();
+    Instances inst = ArffImporter.importArff(arffInputFile);
 
-		NaiveBayesMultinomial cl = new NaiveBayesMultinomial();
-		Instances inst = ArffImporter.importArff(arffInputFile);
+    inst.randomize(rand);
+    inst.stratify(numFolds);
 
-		inst.randomize(rand);
-		inst.stratify(10);
-	
-	
-		Evaluation eval = new Evaluation(inst);
+    Evaluation eval = new Evaluation(inst);
 
-		for (int n = 0; n < 10; n++) {
-			Instances train = inst.trainCV(10, n);
-			Instances test = inst.testCV(10, n);
+    for (int n = 0; n < numFolds; n++) {
+      Instances train = inst.trainCV(numFolds, n);
+      Instances test = inst.testCV(numFolds, n);
 
-			cl.buildClassifier(train);
-			eval.evaluateModel(cl, test);
-			System.out.println(eval.pctCorrect());
-		}
+      cl.buildClassifier(train);
+      eval.evaluateModel(cl, test);
+      System.out.println(eval.pctCorrect());
+    }
 
-	}
+  }
 }
